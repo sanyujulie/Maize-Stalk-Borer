@@ -31,6 +31,7 @@
                             <th>Location</th>
                             <th>Contact</th>
                             <th>Created at</th>
+                            <th>Severity Level</th>
                         </tr>    
                     </thead>
                     <tbody>
@@ -42,6 +43,7 @@
                                 <td>{{ farmer.farmLocation }}</td>
                                 <td>{{ farmer.contact }}</td>
                                 <td>{{ farmer.createdAt }}</td>
+                                <td>{{farmer.severity_level}}</td>
                             </tr>
                         {% empty %}
                             <tr>

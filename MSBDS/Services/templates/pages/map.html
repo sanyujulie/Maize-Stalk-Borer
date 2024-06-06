@@ -33,10 +33,26 @@
 
         farmers.forEach(function(farmer) {
             var location = new Microsoft.Maps.Location(farmer.latitude, farmer.longitude);
-            var pin = new Microsoft.Maps.Pushpin(farmLocation, {
-                title: farmer.username,
+
+            // Determine pin color based on severity level
+            var pinColor;
+            switch (farmer.severity_level.toLowerCase()) {
+                case 'high':
+                    pinColor = 'red';
+                    break;
+                case 'moderate':
+                    pinColor = 'yellow';
+                    break;
+                case 'low':
+                default:
+                    pinColor = 'green';
+                    break;
+            }
+
+            var pin = new Microsoft.Maps.Pushpin(location, {
+                
                 subTitle: farmer.farmLocation,
-                color: 'red'
+                color: pinColor
             });
             map.entities.push(pin);
         });

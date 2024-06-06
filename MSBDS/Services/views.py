@@ -35,6 +35,7 @@ def map(request):
                 'farmLocation': farmer['farmLocation'],
                 'latitude': lat,
                 'longitude': lng,
+                'severity_level': farmer.get('severity_level', 'low')
             })
 
     context = {'farmers_with_location': farmers_with_location}
