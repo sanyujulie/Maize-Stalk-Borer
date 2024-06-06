@@ -1,0 +1,80 @@
+{% load static %}
+
+<!-- Sidebar -->
+<ul class="navbar-nav  sidebar sidebar-dark accordion"  id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center bg-gradient-primary" href="{% url 'index' %}">
+        <div class="sidebar-brand-icon">
+            <!-- <img src="{% static 'img/NFT_Logo_PNG.png' %}" alt="Company Logo" style="max-width: 220px; max-height: 70px;">
+             -->
+             <p><b>MSBDS</b></p>
+        </div>
+        
+        <!-- <div class="sidebar-brand-text mx-3">NFT Consult</div> -->
+    </a>
+    
+
+    <!-- Divider -->
+    
+    <hr class="sidebar-divider my-0">
+    <!-- <div class="sidebar-brand d-flex align-items-center justify-content-center">
+        <div class="sidebar-brand-text mx-2">Welcome, {{ user }} !</div>
+    </div> -->
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item {{ menuclass.dashboard }}">
+        <a class="nav-link" href="{% url 'index' %}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>DASHBOARD</span></a>
+    </li>
+
+    <li class="nav-item {{ menuclass.users }}">
+        <a class="nav-link" href="{% url 'users' %}">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>ADMINISTRATORS</span></a>
+    </li>
+
+    <!-- Nav item for service providers -->
+    <li class="nav-item {{ menuclass.registered_farmers }}">
+        <a class="nav-link" href="{% url 'registered_farmers' %}">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>REGISTERED FARMERS</span></a>
+    </li>
+
+    <!-- Nav Item - Utilities Collapse Menu -->
+    <li class="nav-item {{ menuclass.map }}">
+        <a class="nav-link" href="{% url 'map' %}">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>MAP INFESTATION</span>
+        </a>
+       
+    </li>
+    <!-- Nav item for service providers -->
+   
+
+    <!-- Nav Item - Charts -->
+ 
+
+    <!-- Nav Item Modified - Pages Collapse Menu -->
+    <li class="nav-item {{ menuclass.advisories }}">
+        <a class="nav-link" href="{% url 'advisories' %}">
+
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>ADVISORIES</span></a>
+
+    </li>
+
+    
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->
+
+

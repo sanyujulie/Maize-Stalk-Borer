@@ -1,0 +1,156 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Tables{% endblock %}
+
+<!-- Custom styles for this page -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+
+{% block extrastyle %}
+<style>
+.modal-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+ .btn-activate {
+    background-color: #27d3c2;
+    color: white;
+ }
+ .btn-activate:hover {
+    background-color: #02b3a1;
+    color: white;
+ }
+</style>
+{% endblock extrastyle %}
+
+{% block content %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {% elif message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {% elif message.tags == 'warning' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {% else %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {% endif %}
+        {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Users</h6>
+        </div>
+        <div class="card-body">
+            
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Username</th>
+                         
+                            <th>Admin Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr row_id="{{ user.id }}">
+                            <td>
+                                <i class="fas fa-edit edit-user-icon clickable"
+                                   data-toggle="modal"
+                                   data-target="#modifyModal"
+                                   data-user-id="{{ user.id }}"
+                                   data-username="{{ user.username }}"
+                                  
+                                   data-admin-role="{{ user.admin_role }}"
+                                   data-status="{{ user.is_active }}"
+                                   style="color: green;">
+                                </i>
+                            </td>
+                            <td>{{ user.username }}</td>
+                            
+                            <td>{{ user.admin_role }}</td>
+                            <td>{% if user.is_active %} Active {% else %} Deactivated {% endif %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No users found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Data -->
+    <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modifyModalLabel">Modify User Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        {% csrf_token %}
+                        <input id="userId" name="user_id" hidden>
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="text" class="form-control" id="password" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="admin_role">Admin Role</label>
+                            <select class="form-control form-control-sm" id="admin_role" name="admin_role">
+                                {% for role_code, role_name in admin_role_choices %}
+                                    <option value="{{ role_code }}">{{ role_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer modal-flex">
+                    <div class="modal-child">
+                        <button id="change_status" class="btn btn-activate">Activate</button>
+                    </div>
+                    <div class="modal-child">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
+    
+
+    
+</div>
+{% endblock content %}

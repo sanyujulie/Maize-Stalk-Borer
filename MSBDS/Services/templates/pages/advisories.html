@@ -1,0 +1,108 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Maize Stalk Borers Advisories FAQ{% endblock %}
+
+<!-- Custom styles for this page -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">  
+
+{% block extrastyle %}
+<style>
+    .chat-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        overflow-y: auto;
+        max-height: 400px;
+    }
+    .chat-bubble {
+        display: inline-block;
+        max-width: 80%;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background-color: #e0f7fa;
+    }
+    .user-message {
+        text-align: right;
+    }
+    .bot-message {
+        text-align: left;
+    }
+</style>
+{% endblock extrastyle %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Chatbot Section -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Initial greeting message -->
+        <div class="chat-bubble bot-message">Hello! How can I assist you today?</div>
+    </div>
+    <!-- Input field for user questions -->
+    <div>
+        <input type="text" id="userInput" placeholder="Enter your question...">
+        <button onclick="handleUserInput()">Ask</button>
+    </div>
+</div>
+
+<script>
+    // Function to add a user message to the chat container
+    function addUserMessage(message) {
+        const chatContainer = document.getElementById('chatContainer');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-bubble user-message';
+        messageDiv.textContent = message;
+        chatContainer.appendChild(messageDiv);
+    }
+
+    // Function to add a bot message to the chat container
+    function addBotMessage(message) {
+        const chatContainer = document.getElementById('chatContainer');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-bubble bot-message';
+        messageDiv.textContent = message;
+        chatContainer.appendChild(messageDiv);
+    }
+
+    // Function to simulate bot responses
+    function simulateBotResponse(question) {
+        console.log('User question:', question);
+        let answer = '';
+        // Check the user's question and provide an appropriate response
+        switch(question.toLowerCase()) {
+            case 'what are maize stalk borers?':
+                console.log('Matching question:', question);
+                answer = 'Maize stalk borers are a type of insect pest that commonly infests maize crops, particularly during the growing season. They typically lay eggs on maize plants, and the larvae bore into the stalks, causing damage to the plant\'s structure and reducing yield.';
+                break;
+            case 'how do i identify maize stalk borers?':
+                console.log('Matching question:', question);
+                answer = 'Maize stalk borers can be identified by their distinctive appearance, which includes long, narrow bodies and dark-colored markings. They are often found feeding inside maize stalks or near the base of the plant. Infested plants may exhibit wilting, yellowing, or stunted growth.';
+                break;
+            case 'what damage do maize stalk borers cause?':
+                console.log('Matching question:', question);
+                answer = 'Maize stalk borers can cause significant damage to maize crops by tunneling into the stalks, which weakens the plant\'s structure and reduces its ability to transport nutrients. This can result in stunted growth, reduced yield, and increased susceptibility to other pests and diseases.';
+                break;
+            default:
+                console.log('No matching question:', question);
+                answer = 'I\'m sorry, I didn\'t understand that question. Please ask something else.';
+        }
+        console.log('Bot response:', answer);
+        return answer;
+    }
+
+    // Function to handle user input
+    function handleUserInput() {
+        const userInput = document.getElementById('userInput').value;
+        addUserMessage(userInput);
+        const botResponse = simulateBotResponse(userInput);
+        addBotMessage(botResponse);
+        // Clear the input field after processing the user's question
+        document.getElementById('userInput').value = '';
+    }
+</script>
+{% endblock %}

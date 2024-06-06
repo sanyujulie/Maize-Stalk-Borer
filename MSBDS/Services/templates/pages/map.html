@@ -1,0 +1,48 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Uganda Map{% endblock %}
+
+<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+{% block content %}
+<div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">Farm Infestation Map</h6>
+</div>
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+</style>
+
+<div id="map"></div>
+
+<script>
+    // Initialize Bing Maps API
+    function loadMapScenario() {
+        var map = new Microsoft.Maps.Map(document.getElementById('map'), {
+            credentials: 'AvvQV4ch_5cSpbgNw94ftFt3Xsy41cLVIBmOuhrd3WRvTFzKW2kLP09WeNPSfgrg',
+            center: new Microsoft.Maps.Location(1.3733, 32.2903), // Center of Uganda
+            zoom: 7,
+            mapTypeId: Microsoft.Maps.MapTypeId.road
+        });
+
+        // Add farmer locations
+        var farmers = {{ farmers_with_location|safe }}; // Ensure this data is passed correctly
+
+        farmers.forEach(function(farmer) {
+            var location = new Microsoft.Maps.Location(farmer.latitude, farmer.longitude);
+            var pin = new Microsoft.Maps.Pushpin(farmLocation, {
+                title: farmer.username,
+                subTitle: farmer.farmLocation,
+                color: 'red'
+            });
+            map.entities.push(pin);
+        });
+    }
+</script>
+
+<script src="https://www.bing.com/api/maps/mapcontrol?callback=loadMapScenario" async defer></script>
+
+{% endblock %}
