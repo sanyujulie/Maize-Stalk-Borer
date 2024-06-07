@@ -4,8 +4,7 @@ from django.forms import ModelForm
 from django.core.validators import FileExtensionValidator
 from django.core.validators import EmailValidator, RegexValidator, MinLengthValidator, MaxLengthValidator
 from django.core.exceptions import ValidationError
-from djmoney.forms.fields import MoneyField
-from djmoney.money import Money
+
 import re
 
 
@@ -14,30 +13,15 @@ import re
 def validate_not_entirely_numeric(value):
     if value.isdigit():
         raise ValidationError("Package name cannot be entirely numeric.")
-
+        
 class LoginForm(forms.Form):
     username = forms.CharField(
         required=True,
-        widget= forms.TextInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "username",
-                "name": "username",
-                "id": "username"
-                }
-            )
-        )
-    
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "username", "name": "username", "id": "username"})
+    )
     password = forms.CharField(
         required=True,
-        widget=forms.PasswordInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "password",
-                "name": "password",
-                "id": "password"
-            }
-        )
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "password", "name": "password", "id": "password"})
     )
     
 
@@ -87,11 +71,8 @@ class RegistrationForm(forms.ModelForm):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
-
-        if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password', "Passwords do not match.")
-
-        return cleaned_data
+        if password != confirm_password:
+            raise forms.ValidationError("Password and confirm password do not match")
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -100,6 +81,7 @@ class RegistrationForm(forms.ModelForm):
             user.save()
         return user
 
+    
 
 
 

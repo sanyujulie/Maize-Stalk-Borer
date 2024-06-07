@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from celery import schedules
-from celery.schedules import crontab
+
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$n0bl5v_vvlwtd57)ko53jovjqy7(b@1*6mahnh5bmdpo@d9)-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["195.201.27.243"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Services',
 
-    'celery',
-    'djmoney',
+   
     'rest_framework',
     'corsheaders',
 ]
@@ -175,20 +174,6 @@ DEFAULT_FROM_EMAIL = 'no-reply@nftconsult.com'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 
-# Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True 
 
-CELERY_BEAT_SCHEDULE = {
-    'send-expiry-notifications': {
-        'task': 'Services.tasks.send_expiry_reminder_notification',
-        'schedule': crontab(minute='*/2')  # Schedule the task to run every monday
-    },
-}
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

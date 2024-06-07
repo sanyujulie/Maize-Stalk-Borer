@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
-from djmoney.models.fields import MoneyField
+
 from django.utils import timezone
 
 # Define User Levels
@@ -16,13 +16,13 @@ class AccessLevel(models.Model):
 class CustomUser(AbstractUser):
     ADMIN_ROLE_CHOICES = (
         ('admin', 'Admin'),
-        ('non_admin', 'Non-Admin'),
+        ('agricultural expert', 'Agricultural expert'),
     )
 
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
     
-    admin_role = models.CharField(max_length=10, choices=ADMIN_ROLE_CHOICES, default='non_admin')
+    admin_role = models.CharField(max_length=19, choices=ADMIN_ROLE_CHOICES, default='admin')
     
     def __str__(self):
         return self.username

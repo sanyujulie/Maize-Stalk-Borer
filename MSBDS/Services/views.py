@@ -20,7 +20,11 @@ from rest_framework import viewsets
 from .serializers import FarmerSerializer
 from ssms_project.firebase_admin import get_farmers_from_firestore
 from .utils import get_lat_long
-
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from geopy.distance import geodesic
 
 def map(request):
     farmers = get_farmers_from_firestore()
@@ -41,6 +45,65 @@ def map(request):
     context = {'farmers_with_location': farmers_with_location}
     return render(request, 'pages/map.html', context)
 
+# ********************************************************************************************************
+# Function to calculate distance between two coordinates
+def calculate_distance(coord1, coord2):
+    return geodesic(coord1, coord2).kilometers
+
+# Function to get neighboring farms based on a farmer's location
+def get_neighboring_farms(current_farmer, all_farmers, max_distance=5):
+    current_location = (current_farmer['latitude'], current_farmer['longitude'])
+    neighboring_farms = []
+
+    for farmer in all_farmers:
+        if farmer['id'] != current_farmer['id']:  # Exclude the current farmer
+            farmer_location = (farmer['latitude'], farmer['longitude'])
+            distance = calculate_distance(current_location, farmer_location)
+            if distance <= max_distance:
+                neighboring_farms.append(farmer)
+
+    return neighboring_farms
+
+def send_notifications():
+    farmers = get_farmers_from_firestore()
+
+    for farmer in farmers:
+        severity_level = farmer.get('severity_level', 'low')
+
+        if severity_level == 'high':
+            send_notification(farmer['token'], "Take precautionary measures and spray!")
+
+        neighboring_farms = get_neighboring_farms(farmer)  # Function to get neighboring farms
+        for neighbor in neighboring_farms:
+            if neighbor.get('severity_level', 'low') == 'high':
+                send_notification(neighbor['token'], "Take precautionary measures!")
+
+# ********************************************************************************************************
+@csrf_exempt
+def chatbot_response(request):
+    if request.method == 'POST':
+        question = request.POST.get('question')
+        if question:
+            response = get_chatgpt_response(question)
+            return JsonResponse({'response': response})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def get_chatgpt_response(question):
+    url = 'https://api.openai.com/v1/engines/davinci-codex/completions'
+    headers = {
+        'Authorization': f'Bearer {settings.CHATGPT_API_KEY}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        'prompt': question,
+        'max_tokens': 150
+    }
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
+        return response.json().get('choices')[0]['text'].strip()
+    return 'Sorry, I could not get a response from the AI.'
+
+
 def get_active_menu(active_page):
     return {'dashboard': ("active" if active_page == "dashboard" else "")
     , 'registered_farmers': ("active" if active_page == "registered_farmers" else "")
@@ -53,50 +116,42 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            pwd="ServiceSystem@2023"
-            hashed_password = make_password(pwd)
-            user.password = hashed_password
-
-            user.save()
-            return redirect('users') 
+            print("Form is valid")  # Debug output
+            user = form.save()
+            print("User saved:", user.username)  # Debug output
+            return redirect('login')
         else:
-            return render(request, 'pages/register.html', {'form': form})
-    
+            print("Form is not valid:", form.errors)  # Debug output
     else:
         form = RegistrationForm()
-        return render(request, 'pages/register.html', {'form': form})
+    return render(request, 'pages/register.html', {'form': form})
 
 
 def advisories(request):
     return render(request, 'pages/advisories.html')
 
 def login_view(request):
-    
     if request.method == 'POST':
-        form =  LoginForm(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-
+            print(f"Attempting to authenticate user: {username}")  # Debug output
+            user = authenticate(request, username=username, password=password)
             if user is not None:
+                print("Authentication successful")  # Debug output
                 login(request, user)
-                # Redirect to a success page or dashboard
-                return redirect('index')
+                return redirect('index')  # Redirect to the dashboard or home page after successful login
             else:
-                error_message = "Wrong credentials, Try using a different password !!!"
-                return render(request, 'pages/login.html', {'form': form, 'error_message': error_message})
-                 
+                error_message = "Invalid username or password."
+                print("Authentication failed")  # Debug output
         else:
-            # Authentication failed, show an error message
             error_message = "Invalid username or password."
-            return render(request, 'pages/login.html', {'form': form, 'error_message': error_message})
+    else:
+        form = LoginForm()
+        error_message = None
+    return render(request, 'pages/login.html', {'form': form, 'error_message': error_message})
 
-    if request.method == 'GET':
-        error_message = None 
-        form =  LoginForm()       
-        return render(request, 'pages/login.html', {'form': form, 'error_message': error_message})
 
 def logout_user(request):
     logout(request)

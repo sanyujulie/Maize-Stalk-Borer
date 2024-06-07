@@ -50,7 +50,7 @@ urlpatterns = [
     path('buttons/', views.buttons, name='buttons'),
     path('user_profile/', views.user_profile_view, name='user_profile'),
     path('upload_file/', views.upload_file, name='upload_file'),
-    
+    path('chatbot_response/', views.chatbot_response, name='chatbot_response'),
     # reset password routes
     path('reset_password/',
          auth_views.PasswordResetView.as_view(template_name="registration/password_reset_form_.html"),
