@@ -107,18 +107,61 @@
     }
 
     // Function to fetch the chatbot response from the server
+    // Function to fetch the chatbot response from the Wikipedia API
+    // Function to fetch the chatbot response based on user query
     function fetchChatbotResponse(question) {
-        fetch("{% url 'chatbot_response' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ question: question })
+        // Determine the section based on the user's question
+        let section = 'summary';
+        if (question.toLowerCase().includes('symptoms')) {
+            section = 'symptoms';
+        } else if (question.toLowerCase().includes('management')) {
+            section = 'management';
+        } else if (question.toLowerCase().includes('prevention')) {
+            section = 'prevention';
+        } else if (question.toLowerCase().includes('control')) {
+            section = 'control';
+        }
+
+        // Fetch the relevant section from the Wikipedia API
+        fetchWikipediaSection(section);
+    }
+
+    // Function to fetch specific sections from the Wikipedia API
+    function fetchWikipediaSection(section) {
+        const apiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent('Busseola fusca')}`;
+        
+        fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
         })
-        .then(response => response.json())
         .then(data => {
-            addBotMessage(data.response);
+            let responseText = '';
+            const content = data.extract;
+            switch(section) {
+                case 'symptoms':
+                    responseText = extractSymptoms(content);
+                    break;
+                case 'management':
+                    responseText = extractManagement(content);
+                    break;
+                case 'prevention':
+                    responseText = extractPrevention(content);
+                    break;
+                case 'control':
+                    responseText = extractControl(content);
+                    break;
+                default:
+                    responseText = content;
+            }
+
+            if (responseText) {
+                addBotMessage(responseText);
+            } else {
+                addBotMessage(`Sorry, I couldn't find information on ${section}.`);
+            }
         })
         .catch(error => {
             console.error('Error:', error);
@@ -126,20 +169,32 @@
         });
     }
 
-    // Function to get CSRF token
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+    // Function to extract symptoms from the article content
+    function extractSymptoms(content) {
+        // Logic to extract symptoms (this is a placeholder, needs actual implementation)
+        const symptoms = 'Symptoms of the African maize stalk borer include small holes in straight lines across the newest leaves of maize or sorghum, weak stems, and dead hearts.';
+        return symptoms;
+    }
+
+    // Function to extract management methods from the article content
+    function extractManagement(content) {
+        // Logic to extract management (this is a placeholder, needs actual implementation)
+        const management = 'Management of B. fusca includes planting early, applying nitrogen, and using a push-pull system with Desmodium and Napier grass.';
+        return management;
+    }
+
+    // Function to extract prevention measures from the article content
+    function extractPrevention(content) {
+        // Logic to extract prevention (this is a placeholder, needs actual implementation)
+        const prevention = 'Prevention methods include early planting, applying nitrogen, and rotating maize with non-host legume crops.';
+        return prevention;
+    }
+
+    // Function to extract control methods from the article content
+    function extractControl(content) {
+        // Logic to extract control (this is a placeholder, needs actual implementation)
+        const control = 'Control methods for B. fusca include biological control with parasitic wasps and chemical control methods.';
+        return control;
     }
 </script>
 {% endblock %}
