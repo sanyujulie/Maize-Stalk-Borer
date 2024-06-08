@@ -52,7 +52,7 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(template_name="registration/password_reset_complete_.html"),
          name="password_reset_complete"),
     path('chatbot_response/', views.chatbot_response, name='chatbot_response'),
-
+    
 #     path('api/expiry-notifications/', views.ExpiryNotificationsAPI.as_view(), name='expiry-notifications'),
      path('', include(router.urls)),
 ]

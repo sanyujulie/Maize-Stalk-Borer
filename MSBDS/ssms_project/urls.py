@@ -41,7 +41,7 @@ urlpatterns = [
      path('map/', views.map, name='map'),
       path('advisories/', views.advisories, name='advisories'),
     # Services
-   
+ 
     path('user_profile/', views.user_profile_view, name='user_profile'),
     path('users/', views.users, name='users'),
     path('update_user/', views.update_user, name='update_user'),
