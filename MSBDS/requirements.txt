@@ -4,12 +4,11 @@ CacheControl==0.14.0
 cachetools==5.3.3
 certifi==2024.6.2
 cffi==1.16.0
-dj-database-url==2.1.0
-psycopg2-binary==2.9.9
 charset-normalizer==3.3.2
 cron-descriptor==1.4.0
 cryptography==42.0.8
 distlib==0.3.6
+dj-database-url==2.2.0
 Django==4.2.4
 django-admin-argon-dashboard==1.0.16
 django-admin-datta==1.0.10
@@ -59,7 +58,8 @@ python-decouple==3.8
 python-dotenv==1.0.0
 python-json-logger==2.0.7
 pytz==2023.3
-
+pywin32==306
+pywinpty==2.0.10
 PyYAML==6.0
 pyzmq==25.0.2
 requests==2.32.3

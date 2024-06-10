@@ -87,12 +87,15 @@ WSGI_APPLICATION = 'ssms_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 
-    
+    'default': dj_database_url.config(
+       default='postgres://database_postgre_2bu6_user:QUjL4v2rESqsJgp1DJRS8g3eEF5NLLMW@dpg-cpjelnkf7o1s73bv0at0-a.oregon-postgres.render.com/database_postgre_2bu6',
+        conn_max_age=600 
+    )
 }
 if RENDER_EXTERNAL_HOSTNAME:
     DATABASES['default'] = dj_database_url.config(
