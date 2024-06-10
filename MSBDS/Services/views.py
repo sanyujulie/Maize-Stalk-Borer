@@ -8,14 +8,14 @@ from django.http import JsonResponse, HttpResponse
 
 from datetime import datetime, timedelta
 from django.utils import timezone
-from Services.serializers import *
+
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import json
 from django.contrib import messages
 
-from .serializers import FarmerSerializer
+
 from ssms_project.firebase_admin import get_farmers_from_firestore, get_captured_images
 from .utils import get_lat_long
 import requests
