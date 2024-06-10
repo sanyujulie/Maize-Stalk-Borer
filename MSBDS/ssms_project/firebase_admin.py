@@ -4,7 +4,7 @@ from firebase_admin import messaging
 from firebase_admin import credentials
 import time
 
-cred = credentials.Certificate('C:\\Users\\Lenovo\\Desktop\\Maize-Stalk-Borer\\MSBDS\\ssms_project\\cornfield-f722a.json')
+cred = credentials.Certificate('cornfield-f722a.json')
 firebase_admin.initialize_app(cred)
 
 # # Initialize Firestore
@@ -98,6 +98,7 @@ def combine_farmers_and_results():
 # Fetch the combined farmers and their severity levels
 combined_data = combine_farmers_and_results()
 print("Combined Farmers and Results:", combined_data)
+
 def get_captured_images():
     # Reference the 'capturedImages' collection
     captured_images_ref = db.collection_group('capturedImages')
