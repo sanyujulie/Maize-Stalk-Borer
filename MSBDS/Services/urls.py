@@ -5,15 +5,14 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.auth import views as auth_views
 
-from .views import FarmerViewSet
+
 
 
 from Services import views
 
 
 # Create a router and register the ViewSet with it
-router = DefaultRouter()
-router.register(r'farmers', FarmerViewSet)
+
 
 urlpatterns = [
     path('', views.login_view, name='login'),
