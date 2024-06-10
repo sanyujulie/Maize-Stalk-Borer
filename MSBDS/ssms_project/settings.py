@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'Services',
 
    
-    'rest_framework',
+ 
     'corsheaders',
 ]
 
