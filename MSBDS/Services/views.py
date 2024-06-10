@@ -23,7 +23,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from geopy.distance import geodesic
-import openai
+
 
 def map(request):
     farmers = get_farmers_from_firestore()
