@@ -5,9 +5,7 @@ from Services.models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse, HttpResponse
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, generics
+
 from datetime import datetime, timedelta
 from django.utils import timezone
 from Services.serializers import *
@@ -16,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 import json
 from django.contrib import messages
-from rest_framework import viewsets
+
 from .serializers import FarmerSerializer
 from ssms_project.firebase_admin import get_farmers_from_firestore, get_captured_images
 from .utils import get_lat_long
@@ -206,9 +204,7 @@ def images(request):
 
 # ***************************************Farmer endpoint************************************************************
 
-class FarmerViewSet(viewsets.ModelViewSet):
-    queryset = Farmer.objects.all()
-    serializer_class = FarmerSerializer
+
 # ***************************************Farmer endpoint************************************************************
 
     
