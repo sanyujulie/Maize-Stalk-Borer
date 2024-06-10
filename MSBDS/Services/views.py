@@ -18,13 +18,14 @@ import json
 from django.contrib import messages
 from rest_framework import viewsets
 from .serializers import FarmerSerializer
-from ssms_project.firebase_admin import get_farmers_from_firestore
+from ssms_project.firebase_admin import get_farmers_from_firestore, get_captured_images
 from .utils import get_lat_long
 import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from geopy.distance import geodesic
+import openai
 
 def map(request):
     farmers = get_farmers_from_firestore()
@@ -46,23 +47,7 @@ def map(request):
     return render(request, 'pages/map.html', context)
 
 # ********************************************************************************************************
-# Function to calculate distance between two coordinates
-def calculate_distance(coord1, coord2):
-    return geodesic(coord1, coord2).kilometers
 
-# Function to get neighboring farms based on a farmer's location
-def get_neighboring_farms(current_farmer, all_farmers, max_distance=5):
-    current_location = (current_farmer['latitude'], current_farmer['longitude'])
-    neighboring_farms = []
-
-    for farmer in all_farmers:
-        if farmer['id'] != current_farmer['id']:  # Exclude the current farmer
-            farmer_location = (farmer['latitude'], farmer['longitude'])
-            distance = calculate_distance(current_location, farmer_location)
-            if distance <= max_distance:
-                neighboring_farms.append(farmer)
-
-    return neighboring_farms
 
 def send_notifications():
     farmers = get_farmers_from_firestore()
@@ -79,29 +64,29 @@ def send_notifications():
                 send_notification(neighbor['token'], "Take precautionary measures!")
 
 # ********************************************************************************************************
+
+
 @csrf_exempt
 def chatbot_response(request):
     if request.method == 'POST':
-        question = request.POST.get('question')
-        if question:
-            response = get_chatgpt_response(question)
-            return JsonResponse({'response': response})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+        data = json.loads(request.body)
+        question = data.get('question')
 
-def get_chatgpt_response(question):
-    url = 'https://api.openai.com/v1/engines/davinci-codex/completions'
-    headers = {
-        'Authorization': f'Bearer {settings.CHATGPT_API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        'prompt': question,
-        'max_tokens': 150
-    }
-    response = requests.post(url, json=data, headers=headers)
-    if response.status_code == 200:
-        return response.json().get('choices')[0]['text'].strip()
-    return 'Sorry, I could not get a response from the AI.'
+        if question:
+            try:
+                response = openai.Completion.create(
+                    engine="text-davinci-004",
+                    prompt=question,
+                    max_tokens=150
+                )
+                answer = response.choices[0].text.strip()
+                return JsonResponse({'response': answer})
+            except Exception as e:
+                return JsonResponse({'response': 'Sorry, there was an error processing your request.'}, status=500)
+        else:
+            return JsonResponse({'response': 'No question provided.'}, status=400)
+
+    return JsonResponse({'response': 'Invalid request method.'}, status=405)
 
 
 def get_active_menu(active_page):
@@ -160,7 +145,7 @@ def logout_user(request):
 @login_required
 def index_view(request):
     registered_farmers_count = Farmer.objects.count()
-    
+    users_count = CustomUser.objects.count()
     threshold_date = timezone.now() + timedelta(days=90)
     current_datetime = timezone.now()
     
@@ -176,7 +161,7 @@ def index_view(request):
     context = {
         'registered_farmers_count': registered_farmers_count,
         
-        'user': user,
+        'users_count': users_count,
         "menuclass": get_active_menu("dashboard") # pass active class
 
     }
@@ -199,6 +184,25 @@ def registered_farmers(request):
         context = {'firestore_farmers': firestore_farmers, "menuclass": get_active_menu("registered_farmers")}
         
         return render(request, 'pages/registered_farmers.html', context)
+
+@xframe_options_exempt
+@login_required
+def images(request):
+    if request.method == 'POST':
+        # Handling form submission if needed
+        pass
+        
+    if request.method == 'GET':
+        # Fetch registered farmers from Firestore
+        # Assume get_farmers_from_firestore is a function that retrieves farmers from Firestore
+        firestore_images = get_captured_images()
+
+        # Pass the Firestore farmers data to the template context
+        context = {'firestore_images': firestore_images, "menuclass": get_active_menu("images")}
+        
+        return render(request, 'pages/images.html', context)
+
+
 
 # ***************************************Farmer endpoint************************************************************
 
@@ -357,86 +361,9 @@ def change_user_activity_status(request):
 #         return Response(serializer.data, status=status.HTTP_200_OK)
 
                 
-def upload_temp_file(myfile, suggested_file_name):
-    response = {"error": True, "error_msg": "Failed to upload"}
-    try:
-        # remove quites from file name
-        from ssms_project.settings import MEDIA_ROOT
-        import os
-        saved_filename = os.path.join(MEDIA_ROOT, 'temp', suggested_file_name)
-        from django.core.files.storage import FileSystemStorage
-        fs = FileSystemStorage()
-        filename = fs.save(saved_filename, myfile)
-        uploaded_file_url = fs.url(filename)
-        response["error"] = False
-        response["error_msg"] = "Success"
-        response["uploaded_file_url"] = filename
-        response["uploaded_file_name"] = filename[filename.rfind("/")+1:]
-    except Exception as x:
-        response["error"] = True
-        response["error_msg"] = "Failed to save file error:"+str(x)
-    return response
 
 
-def copy_file(source_file_url, destination_file_url):
-    response = {"error": True, "error_msg": "Failed to upload"}
-    try:
-        from django.core.files.storage import FileSystemStorage
-        fs = FileSystemStorage()
-        filename = fs.save(destination_file_url, fs.open(source_file_url))
-        # from shutil import copy
-        # uploaded_file_url = copy(source_file_url, destination_file_url)
-        response["error"] = False
-        response["error_msg"] = "Success"
-        response["uploaded_file_url"] = filename
-        response["uploaded_file_name"] = filename[filename.rfind("/")+1:]
-    except Exception as x:
-        response["error"] = True
-        response["error_msg"] = "Failed to save file error:"+str(x)
-    return response
 
-def delete_file(source_file_url):
-    response = {"error": True, "error_msg": "Failed to delete"}
-    try:
-        from django.core.files.storage import FileSystemStorage
-        fs = FileSystemStorage()
-        filename = fs.delete(source_file_url)
-        response["error"] = False
-        response["error_msg"] = "Success"
-    except Exception as x:
-        response["error"] = True
-        response["error_msg"] = "Failed to save file error:"+str(x)
-    return response
 
-@csrf_exempt  # disable token for now
-@xframe_options_exempt #disable Xframe limit error
-def upload_file(request):
-    html = """"""
-    control_id = 'unknown'
-    file_name = ''
-    exceed_size_limit = False
-    if request.method == 'POST' and request.FILES.__sizeof__() > 0:
-        for file in request.FILES:
-            control_id = str(file).replace("_uploader","")
-            myfile = request.FILES[file]
-            # file should exceed maximu allowed size
-            file_size_mbs = round(myfile.size / 1000000, 1)
-            # use random file name everytime to avoid errors in spaces in filename
-            ret = upload_temp_file(myfile, myfile.name)
-            if ret["error"] is False:
-                file_name = ret["uploaded_file_name"]  # save actual file_name
 
-    #  tell iframe to do the need full
-    file_preview_html = ""
-    html = """
-    <script>
-    //set filename
-    console.log('temp_file_saved','""" + control_id + """','""" + file_name + """');
-    //check if single or multi upload
-    //overwrite existing filename for single upload
-    parent.document.getElementById('uploaded_file_for_""" + control_id + """').value = '""" + file_name + """';
-
-    </script>
-    """
-    return HttpResponse(html)
     

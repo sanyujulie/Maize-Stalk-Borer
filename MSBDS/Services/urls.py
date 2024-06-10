@@ -23,6 +23,7 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     
     path('registered_farmers/', views.registered_farmers, name='registered_farmers'),
+    path('images/', views.images, name='images'),
    
      path('map/', views.map, name='map'),
       path('advisories/', views.advisories, name='advisories'),
@@ -35,7 +36,7 @@ urlpatterns = [
     
     path('buttons/', views.buttons, name='buttons'),
     path('user_profile/', views.user_profile_view, name='user_profile'),
-    path('upload_file/', views.upload_file, name='upload_file'),
+#     path('upload_file/', views.upload_file, name='upload_file'),
     
     # reset password routes
     path('reset_password/',

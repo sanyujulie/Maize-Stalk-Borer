@@ -106,12 +106,12 @@ class FarmerForm(ModelForm):
         required=True,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Contact', 'name': 'contact', 'id': 'contact'})
     )
-    severity_level = forms.CharField(
+    severity = forms.CharField(
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Severity_level', 'name': 'severity_level', 'id': 'severity_level'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Severity', 'name': 'severity', 'id': 'severity'})
     )
     class Meta:
         model = Farmer
-        fields = ['username','farmSize', 'farmLocation', 'contact','severity_level']
+        fields = ['username','farmSize', 'farmLocation', 'contact','severity']
 
 

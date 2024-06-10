@@ -24,6 +24,8 @@ def get_farmers_from_firestore():
         farmer['id'] = doc.id  # Include the document ID if needed
         if 'createdAt' in farmer:
             farmer['createdAt'] = farmer['createdAt'].strftime('%B %d, %Y at %I:%M:%S %p %Z')  # Customize the format as needed
+
+            
         farmers_list.append(farmer)
     
     return farmers_list
@@ -31,6 +33,43 @@ def get_farmers_from_firestore():
 farmers = get_farmers_from_firestore()
 print(farmers)
 
+def get_results_from_firestore():
+    # Reference the 'results' collection
+    results_ref = db.collection('results')
+    
+    # Fetch all documents from the 'results' collection
+    docs = results_ref.stream()
+    
+    # Convert the documents to dictionaries and store them in a list
+    results_list = []
+    for doc in docs:
+        result = doc.to_dict()
+        results_list.append(result)
+    
+    return results_list
+
+# Example usage
+results = get_results_from_firestore()
+print("Results from Firestore:", results)
+
+def get_captured_images():
+    # Reference the 'capturedImages' collection
+    captured_images_ref = db.collection_group('capturedImages')
+    
+    # Fetch all documents from the 'capturedImages' collection
+    docs = captured_images_ref.stream()
+    
+    # Convert the documents to dictionaries and store them in a list
+    images_list = []
+    for doc in docs:
+        image = doc.to_dict()
+        image['id'] = doc.id  # Include the document ID if needed
+        images_list.append(image)
+    
+    return images_list
+
+
+captured_images = get_captured_images()
 
 # kDO6i0hB6mRARvSY5B6FjHdcX6b_aTBZRCjCVZZxvUI
 

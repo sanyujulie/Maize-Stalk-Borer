@@ -46,10 +46,10 @@ urlpatterns = [
     path('users/', views.users, name='users'),
     path('update_user/', views.update_user, name='update_user'),
     path('change-activity-status/', views.change_user_activity_status, name='change_user_activity_status'),
-    
+     path('images/', views.images, name='images'),
     path('buttons/', views.buttons, name='buttons'),
     path('user_profile/', views.user_profile_view, name='user_profile'),
-    path('upload_file/', views.upload_file, name='upload_file'),
+  
     path('chatbot_response/', views.chatbot_response, name='chatbot_response'),
     # reset password routes
     path('reset_password/',
