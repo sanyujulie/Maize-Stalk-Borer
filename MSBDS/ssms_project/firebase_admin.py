@@ -4,7 +4,7 @@ from firebase_admin import messaging
 from firebase_admin import credentials
 import time
 
-cred = credentials.Certificate('cornfield-f722a.json')
+cred = credentials.Certificate('C:\\Users\\Lenovo\\Desktop\\Maize-Stalk-Borer\\MSBDS\\ssms_project\\cornfield-f722a.json')
 firebase_admin.initialize_app(cred)
 
 # # Initialize Firestore
@@ -25,7 +25,18 @@ def get_farmers_from_firestore():
         if 'createdAt' in farmer:
             farmer['createdAt'] = farmer['createdAt'].strftime('%B %d, %Y at %I:%M:%S %p %Z')  # Customize the format as needed
 
-            
+        results_ref = db.collection('farmers').document(doc.id).collection('results')
+        results_query = results_ref.limit(1).stream()  # Limit to 1 document to get only the first result
+        for result_doc in results_query:
+            result_data = result_doc.to_dict()
+            print(f"Result data for farmer {doc.id}: {result_data}") 
+            jsonResponse = result_data.get('jsonResponse', {})
+            severity = None
+            if 'severity' in jsonResponse:
+                severity = jsonResponse['severity']
+                print(f"Severity found: {severity}") 
+                 # Extract the severity level from the jsonResponse
+            farmer['severity'] = severity  # Add severity to the farmer dictionary    
         farmers_list.append(farmer)
     
     return farmers_list
@@ -52,6 +63,41 @@ def get_results_from_firestore():
 results = get_results_from_firestore()
 print("Results from Firestore:", results)
 
+
+def combine_farmers_and_results():
+    # Get the list of farmers
+    farmers = get_farmers_from_firestore()
+    
+    # Initialize a list to store combined data
+    combined_list = []
+    
+    # For each farmer, get their results and combine the data
+    for farmer in farmers:
+        # Reference the 'results' subcollection for the current farmer
+        results_ref = db.collection('farmers').document(farmer['id']).collection('results')
+        results_query = results_ref.limit(1).stream()  # Limit to 1 document to get only the first result
+        
+        # Initialize severity to None
+        severity = None
+        
+        # Fetch the results and get the severity from the jsonResponse
+        for result_doc in results_query:
+            result_data = result_doc.to_dict()
+            jsonResponse = result_data.get('jsonResponse', {})
+            if 'severity' in jsonResponse:
+                severity = jsonResponse['severity']
+        
+        # Add the severity to the farmer's data
+        farmer['severity'] = severity
+        
+        # Add the combined data to the list
+        combined_list.append(farmer)
+    
+    return combined_list
+
+# Fetch the combined farmers and their severity levels
+combined_data = combine_farmers_and_results()
+print("Combined Farmers and Results:", combined_data)
 def get_captured_images():
     # Reference the 'capturedImages' collection
     captured_images_ref = db.collection_group('capturedImages')
