@@ -11,7 +11,6 @@ from django.contrib.auth import views as auth_views
 from Services import views
 
 
-# Create a router and register the ViewSet with it
 
 
 urlpatterns = [
@@ -54,5 +53,5 @@ urlpatterns = [
     path('chatbot_response/', views.chatbot_response, name='chatbot_response'),
     
 #     path('api/expiry-notifications/', views.ExpiryNotificationsAPI.as_view(), name='expiry-notifications'),
-     path('', include(router.urls)),
+    
 ]

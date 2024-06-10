@@ -65,7 +65,7 @@ urlpatterns = [
     
 
 #     path('api/expiry-notifications/', views.ExpiryNotificationsAPI.as_view(), name='expiry-notifications'),
-     path('', include(router.urls)),
+  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # if settings.DEBUG:
