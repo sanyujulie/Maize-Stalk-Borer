@@ -4,6 +4,8 @@ CacheControl==0.14.0
 cachetools==5.3.3
 certifi==2024.6.2
 cffi==1.16.0
+dj-database-url==2.1.0
+psycopg2-binary==2.9.9
 charset-normalizer==3.3.2
 cron-descriptor==1.4.0
 cryptography==42.0.8

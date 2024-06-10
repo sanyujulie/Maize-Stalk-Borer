@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -91,8 +91,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
 
+    
+}
+if RENDER_EXTERNAL_HOSTNAME:
+    DATABASES['default'] = dj_database_url.config(
+        default='postgres://database_postgre_2bu6_user:QUjL4v2rESqsJgp1DJRS8g3eEF5NLLMW@dpg-cpjelnkf7o1s73bv0at0-a/database_postgre_2bu6',
+        conn_max_age=600
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
