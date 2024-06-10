@@ -21,7 +21,7 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     
     path('registered_farmers/', views.registered_farmers, name='registered_farmers'),
-    path('images/', views.images, name='images'),
+  
    
      path('map/', views.map, name='map'),
       path('advisories/', views.advisories, name='advisories'),
