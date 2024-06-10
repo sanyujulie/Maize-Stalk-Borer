@@ -22,10 +22,7 @@ from django.contrib.auth import views as auth_views
 from django.conf.urls.static import static
 from Services import views
 
-from Services.views import FarmerViewSet
 
-router = DefaultRouter()
-router.register(r'farmers', FarmerViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
