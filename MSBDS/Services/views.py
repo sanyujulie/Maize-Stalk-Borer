@@ -16,7 +16,7 @@ import json
 from django.contrib import messages
 
 
-from ssms_project.firebase_admin import get_farmers_from_firestore, get_results_from_firestore
+from ssms_project.firebase_admin import get_farmers_from_firestore
 from .utils import get_lat_long
 import requests
 from django.http import JsonResponse
@@ -38,7 +38,7 @@ def map(request):
                 'farmLocation': farmer['farmLocation'],
                 'latitude': lat,
                 'longitude': lng,
-                'severity_level': farmer.get('severity_level', 'low')
+                'severity': farmer.get('severity', 'low')
             })
 
     context = {'farmers_with_location': farmers_with_location}
@@ -177,30 +177,14 @@ def registered_farmers(request):
         # Fetch registered farmers from Firestore
         # Assume get_farmers_from_firestore is a function that retrieves farmers from Firestore
         firestore_farmers = get_farmers_from_firestore()
-        results = get_results_from_firestore()
+        
+        for farmer in firestore_farmers:
+            severity = farmer.get('severity')
+            if severity == 'High':
+                token = farmer.get('token')
+                if token:
+                    send_notification(token, 'Farm Alert', 'High severity detected. Set standard precautions.')
 
-        for result in results:
-                # Assuming each result document has a 'farmer_id' field to match with farmers
-                farmer_id = result.get('farmer_id')
-                if farmer_id is None:
-                    print(f"Result document does not have 'farmer_id' field: {result}")
-                    continue
-
-                for farmer in firestore_farmers:
-                    if farmer.get('id') == farmer_id:
-                        # Extract severity from the result data's jsonResponse
-                        jsonResponse = result.get('jsonResponse', {})
-                        severity = jsonResponse.get('severity', None)
-                        if severity is None:
-                            print(f"jsonResponse does not have 'severity' field: {jsonResponse}")
-                        else:
-                            # Add severity to the farmer data
-                            farmer['severity'] = severity
-                            print(f"Added severity: {severity} to farmer ID: {farmer_id}")
-                        
-                        break  # Found the corresponding result, no need to continue searching
-            
-        # Pass the Firestore farmers data to the template context
         context = {'firestore_farmers': firestore_farmers, "menuclass": get_active_menu("registered_farmers")}
         
         return render(request, 'pages/registered_farmers.html', context)
