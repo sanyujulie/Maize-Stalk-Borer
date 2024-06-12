@@ -1,2 +1,0 @@
-# serializers.py
-

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Style for the header bar */
+        .header-bar {
+            background-color: #025014; /* Green background */
+            padding: 0.1px;
+            color: white;
+            text-align: center; /* Center all content within the header bar */
+        }
+
+        /* Style for the map container */
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <!-- Wrap each heading in its own div for centering -->
+    <div style="display: block;">
+        <h1>Maize Stalk Borer System</h1>
+    </div>
+    <div style="display: block;">
+        <h1>Farm Infestation Map</h1>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<script>
+    // Initialize Bing Maps API
+    function loadMapScenario() {
+        var map = new Microsoft.Maps.Map(document.getElementById('map'), {
+            credentials: 'AvvQV4ch_5cSpbgNw94ftFt3Xsy41cLVIBmOuhrd3WRvTFzKW2kLP09WeNPSfgrg',
+            center: new Microsoft.Maps.Location(1.3733, 32.2903), // Center of Uganda
+            zoom: 7,
+            mapTypeId: Microsoft.Maps.MapTypeId.road
+        });
+
+        // Add farmer locations
+        var farmers = {{ farmers_with_location|safe }}; // Ensure this data is passed correctly
+
+        farmers.forEach(function(farmer) {
+            var location = new Microsoft.Maps.Location(farmer.latitude, farmer.longitude);
+
+            // Determine pin color based on severity level
+            var pinColor;
+            switch (farmer.severity.toLowerCase()) {
+                case 'high':
+                    pinColor = 'red';
+                    break;
+                case 'medium':
+                    pinColor = 'yellow';
+                    break;
+                case 'low':
+                default:
+                    pinColor = 'green';
+                    break;
+            }
+
+            var pin = new Microsoft.Maps.Pushpin(location, {
+                subTitle: farmer.farmLocation,
+                color: pinColor
+            });
+            map.entities.push(pin);
+        });
+    }
+</script>
+
+<script src="https://www.bing.com/api/maps/mapcontrol?callback=loadMapScenario" async defer></script>
+
+</body>
+</html>
