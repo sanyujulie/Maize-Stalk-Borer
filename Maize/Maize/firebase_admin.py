@@ -4,7 +4,7 @@ from firebase_admin import messaging
 from firebase_admin import credentials
 import time
 
-cred = credentials.Certificate('C:\\Users\\Lenovo\\Desktop\\MAIZE STALK FARM\\Maize\\Maize\\cornfield-f722a.json')
+cred = credentials.Certificate('cornfield-f722a.json')
 firebase_admin.initialize_app(cred)
 
 # # Initialize Firestore
