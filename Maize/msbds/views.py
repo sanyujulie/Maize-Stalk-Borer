@@ -6,6 +6,9 @@ from .utils import get_lat_long
 def advisories(request):
     return render(request, 'advisories.html')  
 
+def notification(request):
+    return render(request, 'notification.html')  
+
 def map(request):
     farmers = get_farmers_from_firestore()
 
